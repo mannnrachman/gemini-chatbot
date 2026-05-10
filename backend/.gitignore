@@ -1,0 +1,12 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment variables
+.env
+*.env
+
+# Logs and OS
+*.log
+npm-debug.log*
+.DS_Store
