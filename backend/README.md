@@ -1,17 +1,36 @@
 # EduBot Backend 🛠️
 
-Bagian ini menangani seluruh logika komunikasi dengan Google Gemini API.
+Mesin utama EduBot yang menangani pemrosesan bahasa alami menggunakan model Google Gemini AI dan mengelola instruksi sistem pendidikan secara dinamis.
 
-## Teknologi
-- Node.js & Express
-- @google/genai SDK
-- dotenv (Environment Variables)
-- express-rate-limit (Security)
+## 🛠️ Stack Teknologi
+- **Runtime**: Node.js
+- **Framework**: Express.js
+- **AI Engine**: [@google/generative-ai](https://www.npmjs.com/package/@google/generative-ai)
+- **Security**: [express-rate-limit](https://www.npmjs.com/package/express-rate-limit) (Melindungi kuota API dari penyalahgunaan)
+- **CORS**: Mengizinkan akses lintas domain dari frontend.
 
-## Endpoints
-- `POST /api/chat`: Menerima riwayat percakapan dan parameter kreatif (educationLevel, teachingStyle).
+## 🧠 Logika Instruksi Sistem
+Backend secara dinamis menyusun *System Instruction* berdasarkan parameter yang dikirim frontend:
+- **Tingkat Pendidikan**: Menentukan kompleksitas bahasa dan kedalaman penjelasan.
+- **Gaya Mengajar**: 
+    - `Socratic`: Bertanya balik untuk memancing pemikiran kritis.
+    - `Explanatory`: Memberikan penjelasan langkah-demi-langkah yang detail.
+    - `Summary`: Fokus pada poin-poin inti dan kesimpulan cepat.
 
-## Cara Menjalankan
-1. `npm install`
-2. Pastikan file `.env` sudah terisi dengan `GEMINI_API_KEY`.
-3. `node index.js`
+## 🔌 API Endpoints
+### `POST /api/chat`
+Endpoint utama untuk mendapatkan respon AI.
+**Request Body:**
+```json
+{
+  "conversation": [{"role": "user", "text": "..."}, ...],
+  "educationLevel": "SMA",
+  "teachingStyle": "Explanatory"
+}
+```
+
+## 📥 Cara Instalasi
+1. Masuk ke folder: `cd backend`
+2. Instal dependensi: `npm install`
+3. Buat file `.env` dan isi: `GEMINI_API_KEY=your_api_key_here`
+4. Jalankan server: `node index.js`
