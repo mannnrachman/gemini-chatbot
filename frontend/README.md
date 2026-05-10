@@ -1,27 +1,27 @@
-# EduBot Frontend 🎨
+# EduBot AI Frontend
 
-Antarmuka pengguna premium untuk EduBot AI Chatbot, dirancang untuk memberikan kontrol penuh kepada pengguna atas perilaku AI melalui kustomisasi prompt yang dinamis.
+Antarmuka pengguna EduBot AI yang modern, responsif, dan kaya fitur.
 
-## 🛠️ Stack Teknologi
-- **Core**: [React 19](https://react.dev/) & [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-- **Markdown**: [React Markdown](https://github.com/remarkjs/react-markdown) & [Typography Plugin](https://tailwindcss.com/docs/typography-plugin)
+## 🎨 Keunggulan Desain
 
-## 🌟 Fitur Utama
-- **Konfigurasi Prompt Dinamis**: Modal pengaturan yang memungkinkan pengguna mengedit teks instruksi sistem untuk setiap kategori (SD, SMP, Socratic, dll).
-- **Manajemen Sesi Lokal**: Banyak sesi chat sekaligus dengan penyimpanan otomatis di `localStorage`.
-- **Sidebar & Header Responsif**: Navigasi collapsible dengan hamburger menu untuk pengalaman layar penuh.
-- **Interaksi History Lengkap**:
-    - **Rename**: Judul chat yang dapat diedit manual.
-    - **Delete**: Hapus sesi satu per satu atau sekaligus.
-    - **Timestamps**: Label waktu aktivitas terakhir per sesi.
-- **Mode Gelap Persisten**: Tema yang tersimpan otomatis sesuai preferensi pengguna.
+- **Premium Typography**: 
+  - **Outfit**: Font display yang elegan untuk judul dan logo.
+  - **Inter**: Font sans-serif yang tajam untuk konten teks.
+- **Micro-Animations**: Menggunakan `framer-motion` untuk transisi sidebar, modal, dan bubble chat yang halus.
+- **Glassmorphism**: Desain modal dan backdrop yang transparan dan modern.
+- **Tailwind CSS v4**: Menggunakan versi terbaru Tailwind untuk performa styling yang maksimal.
 
-## 📥 Cara Instalasi
-1. Masuk ke folder: `cd frontend`
-2. Instal dependensi: `npm install`
-3. Jalankan server dev: `npm run dev`
+## 🛠️ Fitur Teknis
 
-Frontend akan berjalan di `http://localhost:5173` dan berkomunikasi dengan backend di `http://localhost:3000`.
+- **Real-time Stream Reading**: Menangani respons stream dari backend untuk tampilan yang instan.
+- **Data Management UI**: Dashboard backup/restore di dalam Settings Modal.
+- **Individual Export**: Kemampuan mengunduh chat spesifik langsung dari sidebar.
+- **Syntax Highlighting**: Menggunakan `react-syntax-highlighter` untuk blok kode.
+
+## 🚀 Menjalankan Frontend
+
+```bash
+npm install
+npm run dev
+```
+Buka `http://localhost:5173` untuk memulai.
