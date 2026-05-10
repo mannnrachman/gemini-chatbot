@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Settings, BookOpen, User, RefreshCcw, Plus, MessageSquare, Trash2, Sun, Moon, Edit2, X, Clock } from 'lucide-react';
+import { Settings as SettingsIcon, BookOpen, RefreshCcw, Plus, MessageSquare, Trash2, Sun, Moon, Edit2, X, Clock } from 'lucide-react';
 
 export default function Sidebar({ 
-  educationLevel, setEducationLevel, 
-  teachingStyle, setTeachingStyle, 
   onResetSession,
   sessions, activeSessionId, onSwitchSession, onNewChat, onDeleteSession, onRenameSession,
   isDarkMode, onToggleDarkMode,
-  onClose
+  onClose,
+  onOpenSettings
 }) {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
@@ -62,8 +61,15 @@ export default function Sidebar({
         </div>
       </div>
 
-      <button onClick={onNewChat} className="flex items-center justify-center gap-2 w-full p-3 mb-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all shadow-md active:scale-95">
+      <button onClick={onNewChat} className="flex items-center justify-center gap-2 w-full p-3 mb-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-all shadow-md active:scale-95">
         <Plus size={18} /> Chat Baru
+      </button>
+
+      <button 
+        onClick={onOpenSettings}
+        className="flex items-center justify-center gap-2 w-full p-3 mb-6 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-medium transition-all"
+      >
+        <SettingsIcon size={18} /> Pengaturan Prompt
       </button>
 
       <div className="flex-1 overflow-y-auto space-y-6 pr-2 chat-scrollbar">
@@ -93,40 +99,12 @@ export default function Sidebar({
                   )}
                 </div>
                 
-                {/* Date and Time Info */}
                 <div className="flex items-center gap-1.5 ml-7 text-[10px] text-slate-400 font-medium">
                   <Clock size={10} />
                   <span>{formatDate(s.updatedAt || s.createdAt)}</span>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-          <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 block">Pengaturan Sesi</label>
-          <div className="space-y-5">
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"><User size={16} className="text-slate-400" /> Tingkat Pendidikan</label>
-              <select value={educationLevel} onChange={(e) => setEducationLevel(e.target.value)} className="w-full p-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-slate-200">
-                <option value="SD">Sekolah Dasar (SD)</option>
-                <option value="SMP">Sekolah Menengah (SMP)</option>
-                <option value="SMA">Sekolah Menengah Atas (SMA)</option>
-                <option value="Mahasiswa">Perguruan Tinggi</option>
-                <option value="Umum">Umum / Profesional</option>
-              </select>
-            </div>
-            <div>
-              <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2"><Settings size={16} className="text-slate-400" /> Gaya Mengajar</label>
-              <div className="space-y-2">
-                {['Socratic', 'Explanatory', 'Summary'].map(style => (
-                  <label key={style} className={`flex items-center p-3 border rounded-xl cursor-pointer transition-all ${teachingStyle === style ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-900' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>
-                    <input type="radio" name="style" value={style} checked={teachingStyle === style} onChange={(e) => setTeachingStyle(e.target.value)} className="text-blue-600 focus:ring-blue-500 w-4 h-4" />
-                    <span className={`ml-3 text-sm font-medium ${teachingStyle === style ? 'text-blue-700 dark:text-blue-400' : 'text-slate-600 dark:text-slate-400'}`}>{style === 'Socratic' ? 'Socratic (Pancingan)' : style === 'Explanatory' ? 'Penjelasan Detail' : 'Ringkasan Cepat'}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </div>

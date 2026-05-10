@@ -2,7 +2,23 @@ import { useState, useEffect } from 'react';
 import { SendHorizontal, Menu, X } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import ChatWindow from './components/ChatWindow';
+import SettingsModal from './components/SettingsModal';
 import { AnimatePresence, motion } from 'framer-motion';
+
+const DEFAULT_PROMPTS = {
+  levels: {
+    SD: "Tingkat audiens/pendidikan pengguna adalah Sekolah Dasar (SD). Gunakan bahasa yang sangat sederhana, analogi dunia nyata yang mudah dipahami anak-anak, dan hindari istilah teknis yang rumit. Bersikaplah sangat sabar dan ceria.",
+    SMP: "Tingkat audiens/pendidikan pengguna adalah Sekolah Menengah Pertama (SMP). Gunakan bahasa yang semi-formal, penjelasan yang logis namun tetap ringan, dan berikan contoh yang relevan dengan kehidupan remaja.",
+    SMA: "Tingkat audiens/pendidikan pengguna adalah Sekolah Menengah Atas (SMA). Gunakan bahasa formal, penjelasan yang mendalam, dan hubungkan materi dengan konsep akademis yang lebih luas untuk persiapan kuliah.",
+    Mahasiswa: "Tingkat audiens/pendidikan pengguna adalah Mahasiswa Perguruan Tinggi. Gunakan bahasa akademis, berikan referensi teoretis, dan tantang pengguna dengan pemikiran kritis serta analisis mendalam.",
+    Umum: "Tingkat audiens/pendidikan pengguna adalah Umum / Profesional. Gunakan bahasa yang efisien, praktis, dan berorientasi pada penerapan di dunia nyata atau pekerjaan."
+  },
+  styles: {
+    Socratic: "Gaya mengajar Anda adalah Socratic Method: Dilarang keras memberikan jawaban langsung di awal. Ajukan 1-2 pertanyaan pancingan atau petunjuk ringan agar pengguna bisa menganalisis dan menemukan jawabannya sendiri secara bertahap.",
+    Explanatory: "Gaya mengajar Anda adalah Explanatory: Berikan penjelasan yang komprehensif, logis, terstruktur dengan baik (gunakan poin-poin/list), berikan contoh konkret, dan mudah dipahami.",
+    Summary: "Anda dalam mode Summary: Berikan ringkasan materi yang sangat padat, singkat, jelas, dan berisi poin-poin utama saja tanpa basa-basi panjang."
+  }
+};
 
 function App() {
   const [sessions, setSessions] = useState(() => {
@@ -15,12 +31,13 @@ function App() {
         console.error("Error parsing sessions", e);
       }
     }
+    const now = new Date().toISOString();
     return [{ 
       id: Date.now().toString(), 
       title: 'Percakapan Baru', 
       messages: [], 
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: now,
+      updatedAt: now
     }];
   });
   
@@ -36,10 +53,15 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => localStorage.getItem('edubot_theme') === 'dark');
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   
   // Settings
   const [educationLevel, setEducationLevel] = useState('SMA');
   const [teachingStyle, setTeachingStyle] = useState('Explanatory');
+  const [prompts, setPrompts] = useState(() => {
+    const saved = localStorage.getItem('edubot_custom_prompts');
+    return saved ? JSON.parse(saved) : DEFAULT_PROMPTS;
+  });
 
   useEffect(() => {
     localStorage.setItem('edubot_sessions', JSON.stringify(sessions));
@@ -48,6 +70,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('edubot_active_session_id', activeSessionId);
   }, [activeSessionId]);
+
+  useEffect(() => {
+    localStorage.setItem('edubot_custom_prompts', JSON.stringify(prompts));
+  }, [prompts]);
 
   useEffect(() => {
     if (isDarkMode) {
@@ -75,13 +101,7 @@ function App() {
   const handleNewChat = () => {
     const now = new Date().toISOString();
     const newId = Date.now().toString();
-    const newSession = { 
-      id: newId, 
-      title: 'Percakapan Baru', 
-      messages: [], 
-      createdAt: now,
-      updatedAt: now
-    };
+    const newSession = { id: newId, title: 'Percakapan Baru', messages: [], createdAt: now, updatedAt: now };
     setSessions([newSession, ...sessions]);
     setActiveSessionId(newId);
     if (window.innerWidth < 1024) setIsSidebarOpen(false);
@@ -117,6 +137,12 @@ function App() {
     setSessions(prev => prev.map(s => s.id === id ? { ...s, title: newTitle.trim(), updatedAt: new Date().toISOString() } : s));
   };
 
+  const handleResetPrompts = () => {
+    if (confirm('Reset semua instruksi prompt ke pengaturan pabrik?')) {
+      setPrompts(DEFAULT_PROMPTS);
+    }
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -130,11 +156,17 @@ function App() {
     setSessions(prev => prev.map(s => s.id === activeSessionId ? { ...s, messages: updatedMessages, title: newTitle, updatedAt: now } : s));
     setIsLoading(true);
 
+    // Combine custom prompts
+    const customSystemInstruction = `Anda adalah EduBot, asisten pendidikan cerdas yang menggunakan bahasa Indonesia. ${prompts.levels[educationLevel]} ${prompts.styles[teachingStyle]}`;
+
     try {
       const response = await fetch('http://localhost:3000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversation: updatedMessages.slice(-10), educationLevel, teachingStyle })
+        body: JSON.stringify({ 
+          conversation: updatedMessages.slice(-10),
+          customSystemInstruction
+        })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Server error');
@@ -156,14 +188,25 @@ function App() {
 
   return (
     <div className={`flex h-screen font-sans overflow-hidden transition-colors duration-300 ${isDarkMode ? 'bg-slate-950 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
+      
+      <SettingsModal 
+        isOpen={isSettingsOpen} 
+        onClose={() => setIsSettingsOpen(false)}
+        educationLevel={educationLevel}
+        setEducationLevel={setEducationLevel}
+        teachingStyle={teachingStyle}
+        setTeachingStyle={setTeachingStyle}
+        prompts={prompts}
+        setPrompts={setPrompts}
+        onResetPrompts={handleResetPrompts}
+      />
+
       <AnimatePresence>
         {isSidebarOpen && (
           <>
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsSidebarOpen(false)} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden" />
             <motion.div initial={{ x: -320 }} animate={{ x: 0 }} exit={{ x: -320 }} transition={{ type: 'spring', damping: 25, stiffness: 200 }} className="fixed inset-y-0 left-0 z-50 lg:relative lg:z-0 shrink-0" >
               <Sidebar 
-                educationLevel={educationLevel} setEducationLevel={setEducationLevel}
-                teachingStyle={teachingStyle} setTeachingStyle={setTeachingStyle}
                 onResetSession={handleReset}
                 sessions={sessions}
                 activeSessionId={activeSessionId}
@@ -174,6 +217,7 @@ function App() {
                 isDarkMode={isDarkMode}
                 onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
                 onClose={() => setIsSidebarOpen(false)}
+                onOpenSettings={() => setIsSettingsOpen(true)}
               />
             </motion.div>
           </>
