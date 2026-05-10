@@ -168,17 +168,48 @@ function App() {
           customSystemInstruction
         })
       });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || 'Server error');
 
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || 'Server error');
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      // Tambahkan bubble kosong untuk model
       setSessions(prev => prev.map(s => {
-        if (s.id === activeSessionId) return { ...s, messages: [...updatedMessages, { role: 'model', text: data.result }], updatedAt: new Date().toISOString() };
+        if (s.id === activeSessionId) return { ...s, messages: [...updatedMessages, { role: 'model', text: '' }] };
         return s;
       }));
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+        
+        setSessions(prev => prev.map(s => {
+          if (s.id === activeSessionId) {
+            const lastMsgIdx = s.messages.length;
+            const newMessages = [...s.messages];
+            if (newMessages.length > 0) {
+              newMessages[newMessages.length - 1] = { role: 'model', text: fullText };
+            }
+            return { ...s, messages: newMessages, updatedAt: new Date().toISOString() };
+          }
+          return s;
+        }));
+      }
     } catch (error) {
       console.error(error);
       setSessions(prev => prev.map(s => {
-        if (s.id === activeSessionId) return { ...s, messages: [...updatedMessages, { role: 'model', text: 'Maaf, terjadi kesalahan atau koneksi terputus. Silakan coba lagi.' }], updatedAt: new Date().toISOString() };
+        if (s.id === activeSessionId) {
+          const newMessages = s.messages.filter(m => m.text !== ''); // Clean up empty bot message if error occurred early
+          return { ...s, messages: [...newMessages, { role: 'model', text: 'Maaf, terjadi kesalahan atau koneksi terputus. Silakan coba lagi.' }], updatedAt: new Date().toISOString() };
+        }
         return s;
       }));
     } finally {
