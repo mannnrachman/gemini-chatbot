@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { Settings as SettingsIcon, BookOpen, RefreshCcw, Plus, MessageSquare, Trash2, Sun, Moon, Edit2, X, Clock } from 'lucide-react';
+import { Settings as SettingsIcon, BookOpen, RefreshCcw, Plus, MessageSquare, Trash2, Sun, Moon, Edit2, X, Clock, Download } from 'lucide-react';
 
 export default function Sidebar({ 
   onResetSession,
   sessions, activeSessionId, onSwitchSession, onNewChat, onDeleteSession, onRenameSession,
+  onExportSession,
   isDarkMode, onToggleDarkMode,
   onClose,
   onOpenSettings
@@ -49,7 +50,7 @@ export default function Sidebar({
           <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
             <BookOpen size={24} />
           </div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-white">EduBot AI</h1>
+          <h1 className="text-xl font-bold text-slate-800 dark:text-white font-display">EduBot AI</h1>
         </div>
         <div className="flex items-center gap-1">
           <button onClick={onToggleDarkMode} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg text-slate-500 dark:text-slate-400 transition-all">
@@ -93,6 +94,7 @@ export default function Sidebar({
 
                   {editingId !== s.id && (
                     <div className="opacity-0 group-hover:opacity-100 flex items-center shrink-0">
+                      <button onClick={(e) => { e.stopPropagation(); onExportSession(s.id); }} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-blue-500 transition-all" title="Export Chat Ini"><Download size={13} /></button>
                       <button onClick={(e) => { e.stopPropagation(); setEditingId(s.id); setEditTitle(s.title); }} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-blue-500 transition-all"><Edit2 size={13} /></button>
                       <button onClick={(e) => onDeleteSession(s.id, e)} className="p-1 hover:bg-slate-200 dark:hover:bg-slate-700 rounded text-slate-400 hover:text-red-500 transition-all"><Trash2 size={13} /></button>
                     </div>

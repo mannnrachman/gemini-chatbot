@@ -143,6 +143,103 @@ function App() {
     }
   };
 
+  const handleExportData = () => {
+    const backupData = {
+      app: 'EduBot AI',
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      payload: {
+        sessions: sessions,
+        prompts: prompts,
+        theme: isDarkMode ? 'dark' : 'light'
+      }
+    };
+    
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `edubot-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportSession = (id) => {
+    const session = sessions.find(s => s.id === id);
+    if (!session) return;
+
+    const backupData = {
+      app: 'EduBot AI',
+      version: '1.0',
+      type: 'single-session',
+      exportedAt: new Date().toISOString(),
+      payload: { session }
+    };
+    
+    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const safeTitle = session.title.replace(/[^a-z0-9]/gi, '-').toLowerCase();
+    a.download = `edubot-chat-${safeTitle}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImportData = (jsonData) => {
+    try {
+      const backup = JSON.parse(jsonData);
+      if (backup.app !== 'EduBot AI') throw new Error('File ini bukan backup EduBot AI yang valid.');
+
+      if (backup.type === 'single-session') {
+        const session = backup.payload.session;
+        if (confirm(`Impor percakapan "${session.title}" sebagai percakapan baru?`)) {
+          const newSession = {
+            ...session,
+            id: Date.now().toString() // New ID to avoid conflict
+          };
+          setSessions([newSession, ...sessions]);
+          setActiveSessionId(newSession.id);
+          alert('Percakapan berhasil diimpor!');
+        }
+        return;
+      }
+
+      const { sessions: backupSessions, prompts: backupPrompts } = backup.payload;
+      
+      // Merge Strategy for Sessions
+      const existingIds = new Set(sessions.map(s => s.id));
+      const newSessions = backupSessions.filter(s => !existingIds.has(s.id));
+      
+      if (newSessions.length === 0 && confirm('Semua percakapan dalam backup sudah ada di riwayat. Apakah Anda ingin mengimpor ulang sebagai salinan baru?')) {
+          const duplicatedSessions = backupSessions.map(s => ({
+            ...s,
+            id: Date.now() + Math.random().toString(36).substr(2, 9),
+            title: `${s.title} (Copy)`
+          }));
+          setSessions([...duplicatedSessions, ...sessions]);
+      } else if (newSessions.length > 0) {
+          if (confirm(`Ditemukan ${newSessions.length} percakapan baru. Gabungkan ke riwayat saat ini?`)) {
+            setSessions([...newSessions, ...sessions]);
+          }
+      }
+
+      // Prompt Merge
+      if (confirm('Apakah Anda ingin menerapkan pengaturan prompt dari file backup ini?')) {
+        setPrompts(backupPrompts);
+      }
+
+      alert('Data berhasil diimpor!');
+    } catch (e) {
+      console.error(e);
+      alert('Gagal mengimpor data: ' + e.message);
+    }
+  };
+
   const handleSend = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -230,6 +327,8 @@ function App() {
         prompts={prompts}
         setPrompts={setPrompts}
         onResetPrompts={handleResetPrompts}
+        onExportData={handleExportData}
+        onImportData={handleImportData}
       />
 
       <AnimatePresence>
@@ -245,6 +344,7 @@ function App() {
                 onNewChat={handleNewChat}
                 onDeleteSession={handleDeleteSession}
                 onRenameSession={handleRenameSession}
+                onExportSession={handleExportSession}
                 isDarkMode={isDarkMode}
                 onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
                 onClose={() => setIsSidebarOpen(false)}
@@ -261,7 +361,7 @@ function App() {
             {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
           <div className="flex-1">
-            <h2 className="text-sm font-semibold text-slate-600 dark:text-slate-300 truncate">{activeSession.title}</h2>
+            <h2 className="text-sm font-bold text-slate-600 dark:text-slate-300 truncate font-display tracking-tight">{activeSession.title}</h2>
           </div>
         </header>
 
