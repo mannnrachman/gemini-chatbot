@@ -1,27 +1,27 @@
 # EduBot Frontend 🎨
 
-Antarmuka pengguna premium untuk EduBot AI Chatbot yang dibangun dengan teknologi web modern untuk memberikan pengalaman belajar yang interaktif dan nyaman.
+Antarmuka pengguna premium untuk EduBot AI Chatbot, dirancang untuk memberikan kontrol penuh kepada pengguna atas perilaku AI melalui kustomisasi prompt yang dinamis.
 
 ## 🛠️ Stack Teknologi
 - **Core**: [React 19](https://react.dev/) & [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) (Modern, Utility-first)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/) (Smooth transitions & Sidebar effects)
-- **Icons**: [Lucide React](https://lucide.dev/) (Clean & Minimalist icons)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
 - **Markdown**: [React Markdown](https://github.com/remarkjs/react-markdown) & [Typography Plugin](https://tailwindcss.com/docs/typography-plugin)
 
-## 🌟 Fitur Unggulan
-- **Manajemen Sesi Lokal**: Riwayat chat tersimpan di `localStorage` dengan dukungan banyak sesi sekaligus.
-- **Sidebar Dinamis**: Navigasi yang responsif, dapat disembunyikan, dan mendukung tampilan mobile (overlay).
-- **Mode Gelap & Terang**: Perpindahan tema yang mulus dengan persistensi status.
-- **Fitur Interaktif History**:
-    - **Rename**: Ubah nama judul chat sesuai keinginan.
-    - **Delete**: Hapus sesi chat tertentu atau bersihkan seluruh riwayat.
-    - **Timestamps**: Info jam dan tanggal pada setiap riwayat chat.
-- **Typing Indicator**: Animasi saat bot sedang memproses jawaban.
+## 🌟 Fitur Utama
+- **Konfigurasi Prompt Dinamis**: Modal pengaturan yang memungkinkan pengguna mengedit teks instruksi sistem untuk setiap kategori (SD, SMP, Socratic, dll).
+- **Manajemen Sesi Lokal**: Banyak sesi chat sekaligus dengan penyimpanan otomatis di `localStorage`.
+- **Sidebar & Header Responsif**: Navigasi collapsible dengan hamburger menu untuk pengalaman layar penuh.
+- **Interaksi History Lengkap**:
+    - **Rename**: Judul chat yang dapat diedit manual.
+    - **Delete**: Hapus sesi satu per satu atau sekaligus.
+    - **Timestamps**: Label waktu aktivitas terakhir per sesi.
+- **Mode Gelap Persisten**: Tema yang tersimpan otomatis sesuai preferensi pengguna.
 
 ## 📥 Cara Instalasi
 1. Masuk ke folder: `cd frontend`
 2. Instal dependensi: `npm install`
 3. Jalankan server dev: `npm run dev`
 
-Pastikan backend berjalan di `http://localhost:3000` agar frontend dapat berkomunikasi dengan API.
+Frontend akan berjalan di `http://localhost:5173` dan berkomunikasi dengan backend di `http://localhost:3000`.

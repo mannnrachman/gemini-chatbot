@@ -1,36 +1,33 @@
 # EduBot Backend 🛠️
 
-Mesin utama EduBot yang menangani pemrosesan bahasa alami menggunakan model Google Gemini AI dan mengelola instruksi sistem pendidikan secara dinamis.
+Backend EduBot yang fleksibel, mendukung instruksi sistem dinamis untuk kustomisasi AI yang maksimal.
 
 ## 🛠️ Stack Teknologi
 - **Runtime**: Node.js
 - **Framework**: Express.js
 - **AI Engine**: [@google/generative-ai](https://www.npmjs.com/package/@google/generative-ai)
-- **Security**: [express-rate-limit](https://www.npmjs.com/package/express-rate-limit) (Melindungi kuota API dari penyalahgunaan)
-- **CORS**: Mengizinkan akses lintas domain dari frontend.
+- **Security**: [express-rate-limit](https://www.npmjs.com/package/express-rate-limit)
 
-## 🧠 Logika Instruksi Sistem
-Backend secara dinamis menyusun *System Instruction* berdasarkan parameter yang dikirim frontend:
-- **Tingkat Pendidikan**: Menentukan kompleksitas bahasa dan kedalaman penjelasan.
-- **Gaya Mengajar**: 
-    - `Socratic`: Bertanya balik untuk memancing pemikiran kritis.
-    - `Explanatory`: Memberikan penjelasan langkah-demi-langkah yang detail.
-    - `Summary`: Fokus pada poin-poin inti dan kesimpulan cepat.
+## 🧠 Fitur API
+Backend ini mendukung dua mode instruksi sistem:
+1.  **Custom Override**: Menerima `customSystemInstruction` langsung dari frontend untuk kontrol penuh atas perilaku AI.
+2.  **Dynamic Fallback**: Secara otomatis menyusun instruksi berdasarkan `educationLevel` dan `teachingStyle` jika instruksi kustom tidak disediakan.
 
 ## 🔌 API Endpoints
 ### `POST /api/chat`
-Endpoint utama untuk mendapatkan respon AI.
+Endpoint utama untuk komunikasi AI.
 **Request Body:**
 ```json
 {
   "conversation": [{"role": "user", "text": "..."}, ...],
-  "educationLevel": "SMA",
-  "teachingStyle": "Explanatory"
+  "customSystemInstruction": "Teks instruksi kustom Anda di sini...",
+  "educationLevel": "SMA", // Optional jika customSystemInstruction ada
+  "teachingStyle": "Explanatory" // Optional jika customSystemInstruction ada
 }
 ```
 
 ## 📥 Cara Instalasi
 1. Masuk ke folder: `cd backend`
 2. Instal dependensi: `npm install`
-3. Buat file `.env` dan isi: `GEMINI_API_KEY=your_api_key_here`
-4. Jalankan server: `node index.js`
+3. Isi file `.env` dengan `GEMINI_API_KEY`.
+4. Jalankan: `node index.js`
