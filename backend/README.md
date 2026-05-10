@@ -1,22 +1,23 @@
-# EduBot Backend
+# EduBot Backend 🛠️
 
-API server untuk EduBot yang menangani pemrosesan pesan melalui Google Gemini AI.
+Backend server yang efisien untuk mengelola komunikasi antara frontend dan Google Gemini AI.
 
-## Fitur Backend
-- **Streaming Response**: Menggunakan `sendMessageStream` untuk pengiriman data real-time ke frontend.
-- **Zod Validation**: Validasi skema input untuk menjamin keamanan data.
-- **Rate Limiting**: Pembatasan jumlah request untuk menjaga kestabilan penggunaan API.
-- **Native History**: Manajemen riwayat percakapan menggunakan fitur bawaan Google GenAI SDK.
+## 🚀 Fitur Utama
+- **Streaming Response**: Implementasi `sendMessageStream` untuk pengiriman data real-time ke pengguna.
+- **Zod Validation**: Validasi data request yang ketat untuk memastikan integritas input.
+- **Rate Limiting**: Keamanan terhadap penyalahgunaan API dengan batasan 20 request per menit.
+- **Native Context Management**: Menggunakan fitur `ChatSession` dari Google GenAI SDK untuk pengelolaan riwayat yang lebih stabil dan akurat.
+- **Dynamic Prompt Support**: Mendukung override instruksi sistem langsung dari frontend untuk kustomisasi bot yang maksimal.
 
-## Konfigurasi
+## ⚙️ Konfigurasi
 Gunakan file `.env` di direktori ini:
 ```env
-GEMINI_API_KEY=your_api_key_here
+GEMINI_API_KEY=your_google_api_key
 ```
 
-## Instalasi & Menjalankan
+## 📥 Instalasi & Menjalankan
 ```bash
 npm install
 node index.js
 ```
-Server akan berjalan di `http://localhost:3000`.
+Server berjalan di `http://localhost:3000`.

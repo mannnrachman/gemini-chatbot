@@ -1,23 +1,27 @@
-# EduBot Frontend
+# EduBot Frontend 🎨
 
-Aplikasi frontend EduBot dibangun menggunakan React untuk memberikan pengalaman chat yang responsif dan interaktif.
+Antarmuka pengguna EduBot AI yang modern, responsif, dan kaya akan fitur interaktif untuk pengalaman belajar yang optimal.
 
-## Teknologi Utama
-- **React 19 & Vite**: Framework dan build tool.
-- **Tailwind CSS v4**: Framework CSS untuk styling.
-- **Framer Motion**: Library untuk animasi antarmuka.
-- **Lucide React**: Set ikon yang digunakan di seluruh aplikasi.
-- **React Markdown**: Rendering konten markdown dari AI.
+## 🛠️ Stack Teknologi
+- **React 19 & Vite**: Framework utama dengan performa build yang cepat.
+- **Tailwind CSS v4**: Framework styling terbaru untuk desain yang konsisten.
+- **Framer Motion**: Library animasi untuk transisi sidebar, modal, dan chat bubble yang halus.
+- **Lucide React**: Set ikon minimalis yang konsisten.
+- **React Markdown**: Rendering konten teks kaya dengan dukungan syntax highlighting.
 
-## Fitur UI
-- **Responsive Sidebar**: Navigasi yang mendukung perangkat mobile dan desktop.
-- **Settings Modal**: Antarmuka untuk mengubah prompt sistem secara dinamis.
-- **Backup & Restore**: Fitur untuk mengelola data percakapan secara lokal.
-- **Copy & Export**: Salin pesan atau ekspor sesi chat tertentu ke file JSON.
+## 🌟 Fitur Antarmuka
+- **Responsive Sidebar**: Navigasi collapsible dengan hamburger menu untuk desktop dan mobile.
+- **Advanced Settings Modal**: Dashboard untuk mengonfigurasi prompt sistem secara dinamis dan manajemen data.
+- **History Management**:
+  - **Rename**: Ubah judul percakapan secara manual.
+  - **Delete**: Hapus sesi tertentu atau bersihkan seluruh riwayat.
+  - **Activity Timestamps**: Informasi waktu interaksi terakhir di setiap sesi.
+- **Data Portability**: Fitur ekspor/impor data JSON untuk backup riwayat belajar pengguna.
+- **Copy Message**: Fitur untuk menyalin jawaban bot dengan mudah.
 
-## Instalasi
+## 📥 Instalasi
 ```bash
 npm install
 npm run dev
 ```
-Pastikan backend berjalan di port 3000 agar komunikasi API berjalan lancar.
+Akses di `http://localhost:5173`.
