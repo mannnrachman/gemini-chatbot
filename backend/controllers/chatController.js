@@ -1,26 +1,37 @@
 import { GoogleGenAI } from '@google/genai';
+import { z } from 'zod';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 const GEMINI_MODEL = "gemini-2.5-flash";
 
+const ChatSchema = z.object({
+    conversation: z.array(z.object({
+        role: z.enum(['user', 'model']),
+        text: z.string()
+    })),
+    educationLevel: z.string().optional(),
+    teachingStyle: z.string().optional(),
+    customSystemInstruction: z.string().optional()
+});
+
 export const generateChatResponse = async (req, res) => {
-    const { conversation, educationLevel, teachingStyle, customSystemInstruction } = req.body;
+    // Set headers for streaming
+    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
+    res.setHeader('Transfer-Encoding', 'chunked');
+
     try {
-        if (!Array.isArray(conversation)) {
-            return res.status(400).json({ error: 'Messages must be an array!' });
+        const validation = ChatSchema.safeParse(req.body);
+        if (!validation.success) {
+            return res.status(400).json({ error: 'Data tidak valid!', details: validation.error.format() });
         }
 
-        const contents = conversation.map(({ role, text }) => ({
-            role,
-            parts: [{ text }]
-        }));
+        const { conversation, educationLevel, teachingStyle, customSystemInstruction } = validation.data;
 
         let sysInstruction = "";
         
         if (customSystemInstruction) {
             sysInstruction = customSystemInstruction;
         } else {
-            // Fallback to default dynamic logic
             sysInstruction = "Anda adalah EduBot, asisten pendidikan cerdas yang menggunakan bahasa Indonesia.";
             
             if (educationLevel) {
@@ -38,18 +49,38 @@ export const generateChatResponse = async (req, res) => {
             }
         }
 
-        const response = await ai.models.generateContent({
+        // Native History Management
+        const history = conversation.slice(0, -1).map(msg => ({
+            role: msg.role,
+            parts: [{ text: msg.text }]
+        }));
+        const lastMessage = conversation[conversation.length - 1].text;
+
+        const chat = ai.chats.create({
             model: GEMINI_MODEL,
-            contents,
             config: {
-                temperature: 0.9,
                 systemInstruction: sysInstruction,
+                temperature: 0.9,
             },
+            history: history
         });
+
+        const stream = await chat.sendMessageStream({ message: lastMessage });
         
-        res.status(200).json({ result: response.text });
+        for await (const chunk of stream) {
+            if (chunk.text) {
+                res.write(chunk.text);
+            }
+        }
+        
+        res.end();
     } catch (e) {
         console.error('API Error:', e.message); 
-        res.status(500).json({ error: 'Terjadi kesalahan pada server. Silakan coba lagi.' }); 
+        if (!res.headersSent) {
+            res.status(500).json({ error: 'Terjadi kesalahan pada server. Silakan coba lagi.' });
+        } else {
+            res.write('\n\n[ERROR: Terjadi kesalahan pada server]');
+            res.end();
+        }
     }
 };
