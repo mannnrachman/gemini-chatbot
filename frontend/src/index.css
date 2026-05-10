@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Explicitly enable .dark class strategy for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
 
 body {
   margin: 0;
@@ -7,7 +11,6 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
 }
 
 code {
@@ -15,7 +18,7 @@ code {
     monospace;
 }
 
-/* Custom Scrollbar for Chat Window */
+/* Custom Scrollbar */
 .chat-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
@@ -26,4 +29,11 @@ code {
 .chat-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: #cbd5e1 transparent;
+}
+
+.dark .chat-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #334155;
+}
+.dark .chat-scrollbar {
+  scrollbar-color: #334155 transparent;
 }
